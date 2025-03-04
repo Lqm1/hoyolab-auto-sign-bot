@@ -21,6 +21,9 @@ const main = async () => {
 
 	const rest = ky.create({
 		prefixUrl: "https://discord.com/api/v10",
+		headers: {
+			Authorization: `Bot ${process.env.DISCORD_TOKEN}`,
+		},
 		throwHttpErrors: true,
 	});
 
@@ -72,9 +75,6 @@ const main = async () => {
 	const response = await rest.put(
 		Routes.applicationCommands(process.env.DISCORD_CLIENT_ID).slice(1),
 		{
-			headers: {
-				Authorization: `Bot ${process.env.DISCORD_TOKEN}`,
-			},
 			json,
 		},
 	);
