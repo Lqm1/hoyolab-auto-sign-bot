@@ -211,7 +211,7 @@ app.post("/interactions", async (c) => {
 				)) {
 				c.executionCtx.waitUntil(promise);
 			}
-			break;
+			return c.json(interaction);
 		case InteractionType.ApplicationCommand:
 			for (const promise of eventEmitter
 				.listeners("interaction")
