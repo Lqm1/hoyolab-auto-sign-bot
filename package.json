@@ -6,11 +6,19 @@
 		"cf-typegen": "wrangler types --env-interface CloudflareBindings"
 	},
 	"dependencies": {
-		"hono": "^4.7.2"
+		"@prisma/adapter-d1": "^6.4.1",
+		"@prisma/client": "^6.4.1",
+		"discord-api-types": "^0.37.119",
+		"hono": "^4.7.2",
+		"ky": "^1.7.5",
+		"tweetnacl": "^1.0.3"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
 		"@cloudflare/workers-types": "^4.20250224.0",
+		"@types/node": "^22.13.8",
+		"prisma": "^6.4.1",
+		"tsx": "^4.19.3",
 		"wrangler": "^3.111.0"
 	}
 }

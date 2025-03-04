@@ -1,0 +1,25 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model DiscordUser {
+  id              String           @id
+  hoyolabAccounts HoYoLABAccount[]
+}
+
+model HoYoLABAccount {
+  id            String      @id @default(cuid())
+  ltuid_v2      Int         @unique
+  ltoken_v2     String      @unique
+  discordUserId String
+  discordUser   DiscordUser @relation(fields: [discordUserId], references: [id], onDelete: Cascade)
+}
