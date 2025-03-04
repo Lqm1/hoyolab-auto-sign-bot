@@ -6,10 +6,12 @@
 		"cf-typegen": "wrangler types --env-interface CloudflareBindings"
 	},
 	"dependencies": {
+		"@discordjs/builders": "^1.10.1",
 		"@prisma/adapter-d1": "^6.4.1",
 		"@prisma/client": "^6.4.1",
 		"discord-api-types": "^0.37.119",
 		"hono": "^4.7.2",
+		"jsencrypt": "^3.3.2",
 		"ky": "^1.7.5",
 		"tweetnacl": "^1.0.3"
 	},

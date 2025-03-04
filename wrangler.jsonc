@@ -13,5 +13,8 @@
 			"database_id": "377d0781-11a2-4e90-bcdb-865f6bcdb4ae",
 			"database_name": "hoyolab-auto-sign-bot"
 		}
-	]
+	],
+	"triggers": {
+		"crons": ["0 20 * * *"]
+	}
 }

@@ -18,8 +18,11 @@ model DiscordUser {
 
 model HoYoLABAccount {
   id            String      @id @default(cuid())
-  ltuid_v2      Int         @unique
-  ltoken_v2     String      @unique
+  ltuid_v2      Int
+  ltoken_v2     String
   discordUserId String
   discordUser   DiscordUser @relation(fields: [discordUserId], references: [id], onDelete: Cascade)
+
+  @@unique([ltuid_v2, discordUserId])
+  @@unique([ltoken_v2, discordUserId])
 }
