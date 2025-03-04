@@ -6,19 +6,19 @@ import {
 } from "discord-api-types/v10";
 import type { RESTPutAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
 
-if (process.env.DISCORD_TOKEN === undefined) {
-	throw new Error("DISCORD_TOKEN is not defined");
-}
-
-if (process.env.DISCORD_CLIENT_ID === undefined) {
-	throw new Error("DISCORD_CLIENT_ID is not defined");
-}
-
-if (process.env.DISCORD_PUBLIC_KEY === undefined) {
-	throw new Error("DISCORD_PUBLIC_KEY is not defined");
-}
-
 const main = async () => {
+	if (process.env.DISCORD_TOKEN === undefined) {
+		throw new Error("DISCORD_TOKEN is not defined");
+	}
+
+	if (process.env.DISCORD_CLIENT_ID === undefined) {
+		throw new Error("DISCORD_CLIENT_ID is not defined");
+	}
+
+	if (process.env.DISCORD_PUBLIC_KEY === undefined) {
+		throw new Error("DISCORD_PUBLIC_KEY is not defined");
+	}
+
 	const rest = ky.create({
 		prefixUrl: "https://discord.com/api/v10",
 		throwHttpErrors: true,
@@ -70,7 +70,7 @@ const main = async () => {
 	];
 
 	const response = await rest.put(
-		Routes.applicationCommands(process.env.DISCORD_CLIENT_ID),
+		Routes.applicationCommands(process.env.DISCORD_CLIENT_ID).slice(1),
 		{
 			headers: {
 				Authorization: `Bot ${process.env.DISCORD_TOKEN}`,
