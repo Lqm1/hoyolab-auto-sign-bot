@@ -36,11 +36,13 @@ import { PrismaD1 } from "@prisma/adapter-d1";
 import { PrismaClient } from "@prisma/client";
 import { Colors } from "../utils/discord";
 
-export type ExtendedAPIPingInteraction = APIPingInteraction & {
-	pong: (
-		withResponse?: boolean,
-	) => Promise<RESTPostAPIInteractionCallbackWithResponseResult | undefined>;
-};
+// export type ExtendedAPIPingInteraction = APIPingInteraction & {
+// 	pong: (
+// 		withResponse?: boolean,
+// 	) => Promise<RESTPostAPIInteractionCallbackWithResponseResult | undefined>;
+// };
+
+export type ExtendedAPIPingInteraction = APIPingInteraction;
 
 export type ExtendedAPIApplicationCommandInteraction =
 	APIApplicationCommandInteraction & {
@@ -184,34 +186,35 @@ app.post("/interactions", async (c) => {
 					listener(
 						{
 							...interaction,
-							...interaction,
-							pong: async (withResponse = false) => {
-								const json: APIInteractionResponse = {
-									type: InteractionResponseType.Pong,
-								};
-								const response = await rest.post(
-									Routes.interactionCallback(
-										interaction.id,
-										interaction.token,
-									).slice(1),
-									{
-										searchParams: new URLSearchParams({
-											with_response: withResponse.toString(),
-										}),
-										json,
-									},
-								);
-								if (withResponse) {
-									return await response.json<RESTPostAPIInteractionCallbackWithResponseResult>();
-								}
-							},
+							// pong: async (withResponse = false) => {
+							// 	const json: APIInteractionResponse = {
+							// 		type: InteractionResponseType.Pong,
+							// 	};
+							// 	const response = await rest.post(
+							// 		Routes.interactionCallback(
+							// 			interaction.id,
+							// 			interaction.token,
+							// 		).slice(1),
+							// 		{
+							// 			searchParams: new URLSearchParams({
+							// 				with_response: withResponse.toString(),
+							// 			}),
+							// 			json,
+							// 		},
+							// 	);
+							// 	if (withResponse) {
+							// 		return await response.json<RESTPostAPIInteractionCallbackWithResponseResult>();
+							// 	}
+							// },
 						},
 						c.env,
 					),
 				)) {
 				c.executionCtx.waitUntil(promise);
 			}
-			return c.json(interaction);
+			return c.json<APIInteractionResponse>({
+				type: InteractionResponseType.Pong,
+			});
 		case InteractionType.ApplicationCommand:
 			for (const promise of eventEmitter
 				.listeners("interaction")
@@ -613,9 +616,6 @@ app.post("/interactions", async (c) => {
 
 eventEmitter.on("interaction", async (interaction, env) => {
 	switch (interaction.type) {
-		case InteractionType.Ping:
-			await interaction.pong();
-			break;
 		case InteractionType.ApplicationCommand:
 			switch (interaction.data.type) {
 				case ApplicationCommandType.ChatInput:
