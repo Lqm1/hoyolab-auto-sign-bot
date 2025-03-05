@@ -16,6 +16,7 @@ This is a Discord auto-login bot for HoYoLAB that leverages Cloudflare Workers a
   - Honkai Impact 3rd
   - Zenless Zone Zero
   - Tears of Themis
+- **Log in to HoYoLAB via Discord**
 - **Credential Management with AES-256 Encryption**
 - **GeeTest Captcha Support**
 - **Multi-Region Support (excluding Chinese servers)**

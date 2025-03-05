@@ -16,6 +16,7 @@ Cloudflare Workers と Cloudflare D1 を活用した、Discord 用 HoYoLAB 自�
   - 崩壊3rd
   - ゼンレスゾーンゼロ
   - 未定事件簿
+- **Discord経由でHoYoLABにログイン**
 - **AES-256 暗号化による認証情報管理**
 - **GeeTest キャプチャ対応**
 - **マルチリージョン対応（中国サーバー以外）**
