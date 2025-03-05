@@ -15,7 +15,7 @@ This is a Discord auto-login bot for HoYoLAB that leverages Cloudflare Workers a
   - Honkai: Star Rail
   - Honkai Impact 3rd
   - Zenless Zone Zero
-  - Undecided Case Files
+  - Tears of Themis
 - **Credential Management with AES-256 Encryption**
 - **GeeTest Captcha Support**
 - **Multi-Region Support (excluding Chinese servers)**
