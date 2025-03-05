@@ -3,7 +3,7 @@ import discord from "./discord";
 import geetest from "./geetest";
 import { PrismaClient } from "@prisma/client";
 import { PrismaD1 } from "@prisma/adapter-d1";
-import { HoYoLAB } from "../utils/hoyolab";
+import { HoYoLAB, HoYoLABError } from "../utils/hoyolab";
 import ky from "ky";
 import { Routes } from "discord-api-types/v10";
 import type {
@@ -39,6 +39,15 @@ const scheduled: ExportedHandlerScheduledHandler<CloudflareBindings> = async (
 ) => {
 	switch (event.cron) {
 		case "0 20 * * *": {
+			const anonHoyolabClient = new HoYoLAB();
+			const houkai3rdMonthlyRewards =
+				await anonHoyolabClient.houkai3rdGetMonthlyRewards();
+			const genshinMonthlyRewards =
+				await anonHoyolabClient.genshinGetMonthlyRewards();
+			const totMonthlyRewards = await anonHoyolabClient.totGetMonthlyRewards();
+			const hsrMonthlyRewards = await anonHoyolabClient.hsrGetMonthlyRewards();
+			const zenlessMonthlyRewards =
+				await anonHoyolabClient.zenlessGetMonthlyRewards();
 			const rest = ky.create({
 				prefixUrl: "https://discord.com/api/v10",
 				headers: {
@@ -56,22 +65,76 @@ const scheduled: ExportedHandlerScheduledHandler<CloudflareBindings> = async (
 							hoyolabAccount.ltoken_v2,
 						);
 						const gameRecordCard = await hoyolabClient.getGameRecordCard();
-						for (const gameRecord of gameRecordCard) {
+						if (gameRecordCard.list.length === 0) return;
+						const createDmChannelJson: RESTPostAPICurrentUserCreateDMChannelJSONBody =
+							{
+								recipient_id: hoyolabAccount.discordUserId,
+							};
+						const dmChannel = await rest
+							.post(Routes.userChannels().slice(1), {
+								json: createDmChannelJson,
+							})
+							.json<APIDMChannel>();
+						for (const gameRecord of gameRecordCard.list) {
 							switch (gameRecord.game_id) {
 								case 2: {
-									await hoyolabClient.genshinClaimDailyReward();
-									const createDmChannelJson: RESTPostAPICurrentUserCreateDMChannelJSONBody =
-										{
-											recipient_id: hoyolabAccount.discordUserId,
-										};
-									const dmChannel = await rest
-										.post(Routes.userChannels().slice(1), {
-											json: createDmChannelJson,
-										})
-										.json<APIDMChannel>();
+									// biome-ignore lint:ignore
+									let result;
+									try {
+										result = await hoyolabClient.genshinClaimDailyReward();
+									} catch (e) {
+										if (e instanceof HoYoLABError) {
+											console.error(
+												hoyolabAccount.discordUserId,
+												hoyolabAccount.ltuid_v2,
+												"Genshin Impact",
+												e.message,
+											);
+											const embed = new EmbedBuilder()
+												.setTitle("Genshin Impact")
+												.setDescription(e.message)
+												.setColor(Colors.Red)
+												.setFooter({
+													text: "Powered by HoYoLAB",
+												})
+												.setTimestamp();
+											const messageJson: RESTPostAPIChannelMessageJSONBody = {
+												embeds: [embed.toJSON()],
+											};
+											await rest.post(
+												Routes.channelMessages(dmChannel.id).slice(1),
+												{
+													json: messageJson,
+												},
+											);
+										} else {
+											console.error(
+												hoyolabAccount.discordUserId,
+												hoyolabAccount.ltuid_v2,
+												"Genshin Impact",
+												e,
+											);
+										}
+										break;
+									}
+									const claimedAward =
+										genshinMonthlyRewards.awards[result.total_sign_day - 1];
+									const tomorrowAward =
+										genshinMonthlyRewards.awards[result.total_sign_day];
 									const embed = new EmbedBuilder()
 										.setTitle("Genshin Impact")
 										.setDescription("Daily Reward Claimed")
+										.setThumbnail(claimedAward.icon)
+										.addFields([
+											{
+												name: "Claimed",
+												value: `${claimedAward.name}x${claimedAward.cnt}`,
+											},
+											{
+												name: "Tomorrow",
+												value: `${tomorrowAward.name}x${tomorrowAward.cnt}`,
+											},
+										])
 										.setColor(Colors.Green)
 										.setFooter({
 											text: "Powered by HoYoLAB",
@@ -89,19 +152,63 @@ const scheduled: ExportedHandlerScheduledHandler<CloudflareBindings> = async (
 									break;
 								}
 								case 6: {
-									await hoyolabClient.hsrClaimDailyReward();
-									const createDmChannelJson: RESTPostAPICurrentUserCreateDMChannelJSONBody =
-										{
-											recipient_id: hoyolabAccount.discordUserId,
-										};
-									const dmChannel = await rest
-										.post(Routes.userChannels().slice(1), {
-											json: createDmChannelJson,
-										})
-										.json<APIDMChannel>();
+									// biome-ignore lint:ignore
+									let result;
+									try {
+										result = await hoyolabClient.hsrClaimDailyReward();
+									} catch (e) {
+										if (e instanceof HoYoLABError) {
+											console.error(
+												hoyolabAccount.discordUserId,
+												hoyolabAccount.ltuid_v2,
+												"Honkai: Star Rail",
+												e.message,
+											);
+											const embed = new EmbedBuilder()
+												.setTitle("Honkai: Star Rail")
+												.setDescription(e.message)
+												.setColor(Colors.Red)
+												.setFooter({
+													text: "Powered by HoYoLAB",
+												})
+												.setTimestamp();
+											const messageJson: RESTPostAPIChannelMessageJSONBody = {
+												embeds: [embed.toJSON()],
+											};
+											await rest.post(
+												Routes.channelMessages(dmChannel.id).slice(1),
+												{
+													json: messageJson,
+												},
+											);
+										} else {
+											console.error(
+												hoyolabAccount.discordUserId,
+												hoyolabAccount.ltuid_v2,
+												"Honkai: Star Rail",
+												e,
+											);
+										}
+										break;
+									}
+									const claimedAward =
+										hsrMonthlyRewards.awards[result.total_sign_day - 1];
+									const tomorrowAward =
+										hsrMonthlyRewards.awards[result.total_sign_day];
 									const embed = new EmbedBuilder()
 										.setTitle("Honkai: Star Rail")
 										.setDescription("Daily Reward Claimed")
+										.setThumbnail(claimedAward.icon)
+										.addFields([
+											{
+												name: "Claimed",
+												value: `${claimedAward.name}x${claimedAward.cnt}`,
+											},
+											{
+												name: "Tomorrow",
+												value: `${tomorrowAward.name}x${tomorrowAward.cnt}`,
+											},
+										])
 										.setColor(Colors.Green)
 										.setFooter({
 											text: "Powered by HoYoLAB",
@@ -119,19 +226,63 @@ const scheduled: ExportedHandlerScheduledHandler<CloudflareBindings> = async (
 									break;
 								}
 								case 8: {
-									await hoyolabClient.zenlessClaimDailyReward();
-									const createDmChannelJson: RESTPostAPICurrentUserCreateDMChannelJSONBody =
-										{
-											recipient_id: hoyolabAccount.discordUserId,
-										};
-									const dmChannel = await rest
-										.post(Routes.userChannels().slice(1), {
-											json: createDmChannelJson,
-										})
-										.json<APIDMChannel>();
+									// biome-ignore lint:ignore
+									let result;
+									try {
+										result = await hoyolabClient.zenlessClaimDailyReward();
+									} catch (e) {
+										if (e instanceof HoYoLABError) {
+											console.error(
+												hoyolabAccount.discordUserId,
+												hoyolabAccount.ltuid_v2,
+												"Zenless Zone Zero",
+												e.message,
+											);
+											const embed = new EmbedBuilder()
+												.setTitle("Zenless Zone Zero")
+												.setDescription(e.message)
+												.setColor(Colors.Red)
+												.setFooter({
+													text: "Powered by HoYoLAB",
+												})
+												.setTimestamp();
+											const messageJson: RESTPostAPIChannelMessageJSONBody = {
+												embeds: [embed.toJSON()],
+											};
+											await rest.post(
+												Routes.channelMessages(dmChannel.id).slice(1),
+												{
+													json: messageJson,
+												},
+											);
+										} else {
+											console.error(
+												hoyolabAccount.discordUserId,
+												hoyolabAccount.ltuid_v2,
+												"Zenless Zone Zero",
+												e,
+											);
+										}
+										break;
+									}
+									const claimedAward =
+										zenlessMonthlyRewards.awards[result.total_sign_day - 1];
+									const tomorrowAward =
+										zenlessMonthlyRewards.awards[result.total_sign_day];
 									const embed = new EmbedBuilder()
 										.setTitle("Zenless Zone Zero")
 										.setDescription("Daily Reward Claimed")
+										.setThumbnail(claimedAward.icon)
+										.addFields([
+											{
+												name: "Claimed",
+												value: `${claimedAward.name}x${claimedAward.cnt}`,
+											},
+											{
+												name: "Tomorrow",
+												value: `${tomorrowAward.name}x${tomorrowAward.cnt}`,
+											},
+										])
 										.setColor(Colors.Green)
 										.setFooter({
 											text: "Powered by HoYoLAB",

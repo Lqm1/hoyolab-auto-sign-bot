@@ -29,4 +29,4 @@ export const Colors = {
 	Greyple: 0x99aab5,
 	DarkButNotBlack: 0x2c2f33,
 	NotQuiteBlack: 0x23272a,
-};
+} as const;
