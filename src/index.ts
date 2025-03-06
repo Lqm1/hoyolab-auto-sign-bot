@@ -117,10 +117,15 @@ const scheduled: ExportedHandlerScheduledHandler<CloudflareBindings> = async (
 										}
 										break;
 									}
+									console.log(result);
+									const info = await hoyolabClient.genshinGetRewardInfo();
+									console.log(info);
 									const claimedAward =
-										genshinMonthlyRewards.awards[result.total_sign_day - 1];
+										genshinMonthlyRewards.awards[info.total_sign_day - 1];
 									const tomorrowAward =
-										genshinMonthlyRewards.awards[result.total_sign_day];
+										genshinMonthlyRewards.awards[info.total_sign_day];
+									console.log(claimedAward);
+									console.log(tomorrowAward);
 									const embed = new EmbedBuilder()
 										.setTitle("Genshin Impact")
 										.setDescription("Daily Reward Claimed")
@@ -191,10 +196,15 @@ const scheduled: ExportedHandlerScheduledHandler<CloudflareBindings> = async (
 										}
 										break;
 									}
+									console.log(result);
+									const info = await hoyolabClient.hsrGetRewardInfo();
+									console.log(info);
 									const claimedAward =
-										hsrMonthlyRewards.awards[result.total_sign_day - 1];
+										hsrMonthlyRewards.awards[info.total_sign_day - 1];
 									const tomorrowAward =
-										hsrMonthlyRewards.awards[result.total_sign_day];
+										hsrMonthlyRewards.awards[info.total_sign_day];
+									console.log(claimedAward);
+									console.log(tomorrowAward);
 									const embed = new EmbedBuilder()
 										.setTitle("Honkai: Star Rail")
 										.setDescription("Daily Reward Claimed")
@@ -265,10 +275,15 @@ const scheduled: ExportedHandlerScheduledHandler<CloudflareBindings> = async (
 										}
 										break;
 									}
+									console.log(result);
+									const info = await hoyolabClient.zenlessGetRewardInfo();
+									console.log(info);
 									const claimedAward =
-										zenlessMonthlyRewards.awards[result.total_sign_day - 1];
+										zenlessMonthlyRewards.awards[info.total_sign_day - 1];
 									const tomorrowAward =
-										zenlessMonthlyRewards.awards[result.total_sign_day];
+										zenlessMonthlyRewards.awards[info.total_sign_day];
+									console.log(claimedAward);
+									console.log(tomorrowAward);
 									const embed = new EmbedBuilder()
 										.setTitle("Zenless Zone Zero")
 										.setDescription("Daily Reward Claimed")
