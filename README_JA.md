@@ -8,6 +8,8 @@
 
 Cloudflare Workers と Cloudflare D1 を活用した、Discord 用 HoYoLAB 自動ログインボットです。
 
+![Image](https://github.com/user-attachments/assets/6de80b1b-6c3a-4b84-beab-9a0783704192)
+
 ## 主な特徴 🚀
 
 - **自動ログイン対応ゲーム：**

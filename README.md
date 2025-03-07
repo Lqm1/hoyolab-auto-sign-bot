@@ -8,6 +8,8 @@
 
 This is a Discord auto-login bot for HoYoLAB that leverages Cloudflare Workers and Cloudflare D1.
 
+![Image](https://github.com/user-attachments/assets/6de80b1b-6c3a-4b84-beab-9a0783704192)
+
 ## Key Features 🚀
 
 - **Supported Games with Auto-Login:**
